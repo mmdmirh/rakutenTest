@@ -1,0 +1,25 @@
+name: Run Robot Framework Tests
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+
+jobs:
+  robot-tests:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Set up Docker
+        run: |
+          docker build -t robot-tests .
+          docker run --rm -v ${{ github.workspace }}/results:/app/results robot-tests
+
+      - name: Upload Robot Test Results
+        uses: actions/upload-artifact@v4
+        with:
+          name: robot-results
+          path: results/
